@@ -48,7 +48,7 @@ jobs:
         with:
           slack_token: ${{ secrets.SLACK_token}}
           channel_id: ${{ secrets.SLACK_Channel_ID}}
-          file_path: 'docs/*.txt'
+          file_path: 'trivy-results.txt'
           initial_comment: 'post by fzm'
           # thread_ts: 'option'
 
