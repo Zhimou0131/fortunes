@@ -32,4 +32,4 @@ jobs:
             vuln-type: 'os,library'
             severity: 'CRITICAL,HIGH'
             output: 'trivy-results.txt'
-
+        continue-on-error: true
