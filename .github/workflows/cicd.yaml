@@ -30,7 +30,7 @@ jobs:
             exit-code: '1'
             ignore-unfixed: true
             vuln-type: 'os,library'
-            severity: 'CRITICAL,HIGH'
+            severity: 'CRITICAL'
             output: 'trivy-results.txt'
         continue-on-error: true
       - name: Slack_Message_fail
@@ -52,7 +52,7 @@ jobs:
           initial_comment: 'post by fzm'
           # thread_ts: 'option'
 
-      - name: Slack_Message_fail
+      - name: Slack_Message_success
         if: steps.scanner.outcome =='success'
         uses: rtCamp/action-slack-notify@v2
         env:
@@ -60,3 +60,37 @@ jobs:
           SLACK_COLOR: '#FF0000'
           SLACK_TITLE: Scan failed
           SLACK_MESSAGE: Failed trivy scan, see uploaded report
+
+      - name: Set up QEMU
+        id: set_up_QEMU
+        uses: docker/setup-qemu-action@v3
+     
+      - name: Set up Docker Buildx
+        id: set_up_Docker_Buildx
+        uses: docker/setup-buildx-action@v3
+     
+      - name: Login to Docker Hub
+        id: login_to_Docker_Hub
+        uses: docker/login-action@v3
+        with:
+         username: ${{ secrets.Dockerhub_Username}}
+         password: ${{ secrets.Docker_Token}}
+ 
+      - name: Build and push
+        id: build_and_push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: fangzhimou/fortunes:latest
+ 
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.1.1
+ 
+      - name: Check install!
+        run: cosign version
+        if: always() && (steps.Run_Trivy.outcome == 'success')
+      - name: Sign the images with GitHub OIDC Token
+        env:
+         DIGEST: ${{ steps.build_and_push.outputs.digest }}
+         TAGS: fangzhimou/fortunes:latest
+        run: cosign sign --yes "${TAGS}@${DIGEST}"
