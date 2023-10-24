@@ -46,8 +46,17 @@ jobs:
         if: steps.scanner.outcome !='success'
         uses: MeilCli/slack-upload-file@v3
         with:
-          slack_token: ${{ secrets.SLACK_TOKEN }}
-          channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack_token: ${{ secrets.SLACK_token}}
+          channel_id: ${{ secrets.SLACK_Channel_ID}}
           file_path: 'docs/*.txt'
           initial_comment: 'post by fzm'
           # thread_ts: 'option'
+
+      - name: Slack_Message
+        if: steps.scanner.outcome =='success'
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL}}
+          SLACK_COLOR: '#FF0000'
+          SLACK_TITLE: Scan failed
+          SLACK_MESSAGE: Failed trivy scan, see uploaded report
