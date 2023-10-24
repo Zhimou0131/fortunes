@@ -1,27 +1,39 @@
-name: My first workflow
+name: cicd-homework
 on:
   push:
-    # any push will trigger this workflow
     branches:
-      - main
+    - 'v[0-9].[0-9]'
+    - '!v[0-9].[0-9]-beta'
+    - '!v[0-9].[0-9].[0-9]'
+    - '!feature-*'
 
 jobs:
-  my_first_ci:
-    # from this point onwards it's ubuntu
+  my_cicd_homework:
     runs-on: ubuntu-latest
     
-    # run means just run a linux command in shell
+    permissions:
+      contents: read
+      packages: write
+      id-token: write # needed for signing the images with GitHub OIDC Token
+      
     steps:
-    - name: get date in Github
-      id: get_date_in_github
-      run: echo "date in github $(date)"
-    
-    - name: list directory
-      id: list_directory
-      run: echo "$(ls -l)"
-
-    - name: list github context
-      id: list_github_context
-      run: echo "repository ${{github.repository}}"
-
-    
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build an image from Dockerfile
+        run: |
+            docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          output: 'trivy-results.txt'
+      - name: Slack Message
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          
