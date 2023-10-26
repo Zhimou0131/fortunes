@@ -64,7 +64,7 @@ jobs:
                          *Matriculation:* A0285965H\n
                          *Email:* e1221777@u.nus.edu\n
                          *Git:* https://github.com/Zhimou0131/fortunes\n
-                         *Docker:* "
+                         *Image:* https://hub.docker.com/repository/docker/fangzhimou/fortunes/general"
   
        
       - name: Set up QEMU
