@@ -30,9 +30,9 @@ jobs:
               exit-code: '1'
               ignore-unfixed: true
               vuln-type: 'os,library'
-              severity: 'CRITICAL,HIGH'
+              severity: 'CRITICAL'
               output: 'trivy-results.txt'
-        continue-on-error: true
+        
       - name: Slack_Message_fail
         if: always() && (steps.scanner.outcome =='failure')
         uses: rtCamp/action-slack-notify@v2
@@ -43,7 +43,7 @@ jobs:
           SLACK_MESSAGE: Failed trivy scan, see uploaded report
          
       - name: Upload_trivy_result
-        if: steps.scanner.outcome !='success'
+        if: always() && (steps.scanner.outcome =='failure')
         uses: MeilCli/slack-upload-file@v3
         with:
           slack_token: ${{ secrets.SLACK_token}}
