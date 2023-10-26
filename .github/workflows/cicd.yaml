@@ -33,7 +33,24 @@ jobs:
               severity: 'CRITICAL,HIGH'
               output: 'trivy-results.txt'
         continue-on-error: true
-  
+      - name: Slack_Message_fail
+        if: always() && (steps.scanner.outcome =='failure')
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL}}
+          SLACK_COLOR: '#FF0000'
+          SLACK_TITLE: Scan failed
+          SLACK_MESSAGE: Failed trivy scan, see uploaded report
+         
+      - name: Upload_trivy_result
+        if: steps.scanner.outcome !='success'
+        uses: MeilCli/slack-upload-file@v3
+        with:
+          slack_token: ${{ secrets.SLACK_token}}
+          channel_id: ${{ secrets.SLACK_Channel_ID}}
+          file_path: 'trivy-results.txt'
+          initial_comment: 'post by fzm'
+          # thread_ts: 'option'
 
       - name: Slack_Message_success
         if: steps.scanner.outcome =='success'
@@ -43,7 +60,8 @@ jobs:
           SLACK_COLOR: '#FF0000'
           SLACK_TITLE: Image built and signed
           SLACK_MESSAGE: success
-
+  
+       
       - name: Set up QEMU
         id: set_up_QEMU
         if: steps.scanner.outcome =='success'
