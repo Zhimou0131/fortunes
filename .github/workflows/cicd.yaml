@@ -59,7 +59,21 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL}}
           SLACK_COLOR: '#FF0000'
           SLACK_TITLE: Image built and signed
-          SLACK_MESSAGE: success
+          SLACK_MESSAGE: <!DOCTYPE html>
+                         <html >
+          
+                         <body>
+          
+                         <div class="info-card">
+                         <p><strong>Name:</strong> Fang Zhimou</p>
+                         <p><strong>Matriculation:</strong>A0285965H</p>
+                         <p><strong>Email:</strong> <a href="mailto:e1221777@u.nus.edu">e1221777@u.nus.edu</a></p>
+                         <p><strong>Git:</strong> <a href="" target="_blank"></a></p>
+                         <p><strong>Image:</strong> <a href="" target="_blank"></a></p>
+                         </div>
+          
+                         </body>
+                         </html>
   
        
       - name: Set up QEMU
